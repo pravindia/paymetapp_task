@@ -30,14 +30,14 @@ class ListCardProduct extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: InkWell(
-          onTap: () async {
-            if (!context.watch<CategoryModel>().isLoading && !context.watch<CategoryModel>().isError) {
+          onTap: () {
+            if (!context.read<CategoryModel>().isLoading && !context.read<CategoryModel>().isError) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (_) => CardDetalisScreen(
                           product: product,
-                          cats: context.watch<CategoryModel>().allCategories,
+                          cats: context.read<CategoryModel>().allCategories,
                         )),
               );
             }
