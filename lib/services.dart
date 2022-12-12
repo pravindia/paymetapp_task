@@ -34,31 +34,6 @@ class ApiService {
     }
   }
 
-  Future<List<Product>> getProductDetails(String catslug) async {
-    try {
-      final http.Response response = await http.get(Uri.https(
-        domain,
-        '/categories/$catslug',
-      ));
-      List<Product> products = [];
-      final body = convert.jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        if (body['message'] == 'Success' && body['data']['products'].length != 0) {
-          for (var product in body['data']['products']) {
-            products.add(Product.fromJson(product));
-          }
-        } else {
-          throw Exception(body['message']);
-        }
-        return products;
-      } else {
-        throw Exception('Request failed');
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<List<Category>> getAllCategory() async {
     try {
       final http.Response response = await http.get(Uri.https(

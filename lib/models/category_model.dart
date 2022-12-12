@@ -36,10 +36,4 @@ class CategoryModel extends ChangeNotifier {
     _categories.insert(newindex, items);
     notifyListeners();
   }
-
-  loadAllCatProducts(String slug) async {
-    await Future.wait(_categories.map((c) async => await _service.getProductDetails(c.slug)));
-
-    notifyListeners();
-  }
 }

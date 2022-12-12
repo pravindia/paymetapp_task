@@ -31,14 +31,16 @@ class ListCardProduct extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () async {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => CardDetalisScreen(
-                        product: product,
-                        cats: context.watch<CategoryModel>().allCategories,
-                      )),
-            );
+            if (!context.watch<CategoryModel>().isLoading && !context.watch<CategoryModel>().isError) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => CardDetalisScreen(
+                          product: product,
+                          cats: context.watch<CategoryModel>().allCategories,
+                        )),
+              );
+            }
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

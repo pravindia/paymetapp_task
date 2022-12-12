@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                if (!context.watch<ProductModel>().isLoading)
+                if (!context.watch<ProductModel>().isLoading && !context.watch<ProductModel>().isError)
                   BigCreditCard(key: featuredCardKey, product: context.read<ProductModel>().getFeaturedCards),
                 const SizedBox(height: 10),
                 Padding(

@@ -65,53 +65,55 @@ class _CardDetalisScreenState extends State<CardDetalisScreen> with SingleTicker
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   BigCreditCard(product: card),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, top: 40),
-                    child: Text(
-                      'Categories',
-                      style: Theme.of(context).textTheme.headline6,
+                  if (cats.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0, top: 40),
+                      child: Text(
+                        'Categories',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
                     ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TabBar(
-                            controller: _tabController,
-                            isScrollable: true,
-                            labelPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-                            indicator: BoxDecoration(borderRadius: BorderRadius.circular(30), color: Colors.amber),
-                            automaticIndicatorColorAdjustment: true,
-                            tabs: [...cats.map((e) => Text(e.toString()))],
+                    Container(
+                      margin: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TabBar(
+                              controller: _tabController,
+                              isScrollable: true,
+                              labelPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+                              indicator: BoxDecoration(borderRadius: BorderRadius.circular(30), color: Colors.amber),
+                              automaticIndicatorColorAdjustment: true,
+                              tabs: [...cats.map((e) => Text(e.toString()))],
+                            ),
                           ),
-                        ),
-                        IconButton(onPressed: () {}, icon: const Icon(Icons.tune))
-                      ],
+                          IconButton(onPressed: () {}, icon: const Icon(Icons.tune))
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 150,
-                    child: TabBarView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: _tabController,
-                      children: [
-                        for (var c in cats)
-                          ListView.builder(
-                            primary: false,
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.only(left: 10),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: c.products?.length,
-                            itemBuilder: (context, index) {
-                              return UserCards(
-                                name: c.products![index],
-                              );
-                            },
-                          ),
-                      ],
+                    SizedBox(
+                      height: 150,
+                      child: TabBarView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: _tabController,
+                        children: [
+                          for (var c in cats)
+                            ListView.builder(
+                              primary: false,
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.only(left: 10),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: c.products?.length,
+                              itemBuilder: (context, index) {
+                                return UserCards(
+                                  name: c.products![index],
+                                );
+                              },
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0, top: 40),
                     child: Text(

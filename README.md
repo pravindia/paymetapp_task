@@ -6,7 +6,7 @@ Flutter version: (Channel stable, 3.3.9, on macOS 13.0.1 22A400 darwin-arm, loca
 
 Design Inspiration from Figma Community : https://www.figma.com/community/file/1156241330072137125
 
-Mockup Data Generated from Mockaroo : https://www.mockaroo.com/55f392c0
+API Mock Data from : https://storerestapi.com/docs
 
 State Management used : Provider Method
 
