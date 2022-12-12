@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:horizonlabs/serializers/category.dart';
 import 'package:horizonlabs/services.dart';
-import '../serializers/product.dart';
 
-class ProductModel extends ChangeNotifier {
-  late List<Product> _products;
+class CategoryModel extends ChangeNotifier {
+  late List<Category> _categories;
 
   bool isLoading = true;
   bool isError = false;
 
   final ApiService _service = ApiService();
 
-  List<Product> get allCards => _products;
-  Product? get getFeaturedCards => (!isError && _products.isNotEmpty) ? _products[0] : null;
+  List<Category> get allCategories => _categories;
 
-  ProductModel() {
+  CategoryModel() {
     loadData();
   }
 
   loadData() async {
     isLoading = true;
-    notifyListeners();
     try {
-      _products = await _service.getAllProducts();
+      _categories = await _service.getAllCategory();
     } catch (e) {
       isError = true;
     }
@@ -34,16 +32,14 @@ class ProductModel extends ChangeNotifier {
     if (newindex > oldindex) {
       newindex -= 1;
     }
-    final items = _products.removeAt(oldindex);
-    _products.insert(newindex, items);
+    final items = _categories.removeAt(oldindex);
+    _categories.insert(newindex, items);
     notifyListeners();
   }
 
-  addMoney() {
-    _products = _products.map((element) {
-      element.price += 50;
-      return element;
-    }).toList();
+  loadAllCatProducts(String slug) async {
+    await Future.wait(_categories.map((c) async => await _service.getProductDetails(c.slug)));
+
     notifyListeners();
   }
 }

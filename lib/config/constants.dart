@@ -10,7 +10,11 @@ var currencyFormater = NumberFormat.currency(
   decimalDigits: 2,
 );
 
+var dateformter = DateFormat.yMd().add_jm();
+
 const floatingActionAdd = Key('floatingActionAdd');
 const featuredCardKey = Key('featuredCardKey');
 const footerText = Key('footerText');
 const profilePageNav = Key('profilePageNav');
+
+const String domain = "api.storerestapi.com";

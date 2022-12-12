@@ -1,25 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:horizonlabs/components/big_credit_card.dart';
-import 'package:horizonlabs/serializers/credit_card.dart';
 
+import 'package:horizonlabs/serializers/category.dart';
+import '../models/users_model.dart';
+import 'package:provider/provider.dart';
+import '../components/big_credit_card.dart';
+import '../serializers/user.dart';
+import '../serializers/product.dart';
 import '../components/dis_user_list.dart';
 import '../components/user_card.dart';
 
 class CardDetalisScreen extends StatefulWidget {
-  final CreditCard card;
-  const CardDetalisScreen({super.key, required this.card});
+  final Product product;
+  final List<Category> cats;
+  const CardDetalisScreen({super.key, required this.product, required this.cats});
 
   @override
   State<CardDetalisScreen> createState() => _CardDetalisScreenState();
 }
 
-class _CardDetalisScreenState extends State<CardDetalisScreen> with TickerProviderStateMixin {
+class _CardDetalisScreenState extends State<CardDetalisScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late final List<Category> cats;
+
+  final UsersModel _model = UsersModel();
 
   @override
   void initState() {
-    _tabController = TabController(length: 5, vsync: this);
+    cats = widget.cats;
+    _tabController = TabController(length: cats.length, vsync: this);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
@@ -30,11 +44,11 @@ class _CardDetalisScreenState extends State<CardDetalisScreen> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final card = widget.card;
+    final card = widget.product;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Credit Card',
+          'Products',
           style: Theme.of(context).textTheme.headline6,
         ),
         centerTitle: false,
@@ -50,11 +64,11 @@ class _CardDetalisScreenState extends State<CardDetalisScreen> with TickerProvid
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  BigCreditCard(card: card),
+                  BigCreditCard(product: card),
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0, top: 40),
                     child: Text(
-                      'Dialogues',
+                      'Categories',
                       style: Theme.of(context).textTheme.headline6,
                     ),
                   ),
@@ -69,13 +83,7 @@ class _CardDetalisScreenState extends State<CardDetalisScreen> with TickerProvid
                             labelPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
                             indicator: BoxDecoration(borderRadius: BorderRadius.circular(30), color: Colors.amber),
                             automaticIndicatorColorAdjustment: true,
-                            tabs: const [
-                              Text('Loan'),
-                              Text('Education'),
-                              Text('Personal'),
-                              Text('Family'),
-                              Text('Work'),
-                            ],
+                            tabs: [...cats.map((e) => Text(e.toString()))],
                           ),
                         ),
                         IconButton(onPressed: () {}, icon: const Icon(Icons.tune))
@@ -88,24 +96,19 @@ class _CardDetalisScreenState extends State<CardDetalisScreen> with TickerProvid
                       physics: const NeverScrollableScrollPhysics(),
                       controller: _tabController,
                       children: [
-                        ListView.builder(
-                          primary: false,
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.only(left: 10),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: card.users.length,
-                          itemBuilder: (context, index) {
-                            return UserCards(
-                              name: card.users[index].name,
-                            );
-                          },
-                        ),
-                        UserCards(
-                          name: card.users[0].name,
-                        ),
-                        Container(),
-                        Container(),
-                        Container(),
+                        for (var c in cats)
+                          ListView.builder(
+                            primary: false,
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(left: 10),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: c.products?.length,
+                            itemBuilder: (context, index) {
+                              return UserCards(
+                                name: c.products![index],
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),
@@ -121,24 +124,30 @@ class _CardDetalisScreenState extends State<CardDetalisScreen> with TickerProvid
               ))
             ];
           },
-          body: ListView.separated(
-            primary: true,
-            itemCount: card.users.length,
-            itemBuilder: (context, index) {
-              return DismissibleUserTile(
-                onDismissed: (direction) {
-                  if (mounted) {
-                    setState(() {
-                      card.users.removeAt(index);
-                    });
-                  }
+          body: ChangeNotifierProvider.value(
+            value: _model,
+            child: Consumer<UsersModel>(builder: (_, model, __) {
+              if (model.isLoading) return const Center(child: CircularProgressIndicator());
+              if (model.isError) return const Text("Error");
+
+              final List<User> item = model.allUsers;
+              if (item.isEmpty) return const Text('No users found');
+              return ListView.separated(
+                primary: true,
+                itemCount: model.allUsers.length,
+                itemBuilder: (context, index) {
+                  return DismissibleUserTile(
+                    onDismissed: (direction) {
+                      model.removeUserAt(index);
+                    },
+                    user: model.allUsers[index],
+                  );
                 },
-                user: card.users[index],
+                separatorBuilder: (BuildContext context, int index) {
+                  return const SizedBox(height: 2);
+                },
               );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(height: 2);
-            },
+            }),
           )),
     );
   }

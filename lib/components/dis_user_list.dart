@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../serializers/users.dart';
+import '../serializers/user.dart';
 
 class DismissibleUserTile extends StatefulWidget {
   const DismissibleUserTile({
@@ -9,7 +9,7 @@ class DismissibleUserTile extends StatefulWidget {
     required this.user,
   });
   final Function(DismissDirection)? onDismissed;
-  final Users user;
+  final User user;
 
   @override
   State<DismissibleUserTile> createState() => DismissibleUserTileState();
@@ -21,7 +21,7 @@ class DismissibleUserTileState extends State<DismissibleUserTile> {
     return Dismissible(
       background: Container(color: Colors.red),
       onDismissed: widget.onDismissed,
-      key: ValueKey<int>(widget.user.id),
+      key: ValueKey<String>(widget.user.id),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         padding: const EdgeInsets.all(4),

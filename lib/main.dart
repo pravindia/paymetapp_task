@@ -1,25 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:horizonlabs/models/cards_model.dart';
 import 'package:provider/provider.dart';
+import 'models/category_model.dart';
 import 'screens/list_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final ProductModel _productModel = ProductModel();
+  final CategoryModel _categoryModel = CategoryModel();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(useMaterial3: true),
-      home: ChangeNotifierProvider.value(
-        value: CardsModel(),
-        child: const MyHomePage(),
+      home: MultiProvider(
+        // value: ProductModel(),
+        providers: [
+          ChangeNotifierProvider<ProductModel>.value(value: _productModel),
+          ChangeNotifierProvider<CategoryModel>.value(value: _categoryModel),
+        ],
+        child: Builder(builder: (context) {
+          return const MyHomePage();
+        }),
       ),
     );
   }

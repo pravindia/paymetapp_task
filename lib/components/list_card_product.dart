@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:horizonlabs/serializers/credit_card.dart';
+import 'package:horizonlabs/models/category_model.dart';
+import 'package:provider/provider.dart';
+
+import '../serializers/product.dart';
 
 import '../config/constants.dart';
 import '../screens/details_screen.dart';
 
-class ListCreditCard extends StatelessWidget {
-  final CreditCard card;
-  const ListCreditCard({super.key, required this.card});
+class ListCardProduct extends StatelessWidget {
+  final Product product;
+  const ListCardProduct({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +25,19 @@ class ListCreditCard extends StatelessWidget {
             Colors.white,
             Colors.white,
             Colors.white,
-            card.getColor(),
+            Colors.blue.shade100,
           ]),
           borderRadius: BorderRadius.circular(12),
         ),
         child: InkWell(
-          onTap: () {
+          onTap: () async {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CardDetalisScreen(card: card)),
+              MaterialPageRoute(
+                  builder: (_) => CardDetalisScreen(
+                        product: product,
+                        cats: context.watch<CategoryModel>().allCategories,
+                      )),
             );
           },
           child: Column(
@@ -38,20 +45,24 @@ class ListCreditCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                currencyFormater.format(card.balance),
-                style: Theme.of(context).textTheme.headline6?.copyWith(color: Colors.black),
+                product.toString(),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
               ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    card.cardtype.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                  Flexible(
+                    flex: 1,
+                    child: Text(
+                      currencyFormater.format(product.price),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                    ),
                   ),
                   Flexible(
+                    flex: 2,
                     child: Text(
-                      'XXXX XXXX XXXX ${card.cardnumber.substring(card.cardnumber.length - 4)}',
+                      product.category.toString(),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                     ),
                   ),

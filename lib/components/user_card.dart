@@ -31,6 +31,7 @@ class UserCards extends StatelessWidget {
             name,
             textAlign: TextAlign.left,
             overflow: TextOverflow.fade,
+            maxLines: 2,
           ),
         ],
       ),

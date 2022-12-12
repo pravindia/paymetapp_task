@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../config/constants.dart';
-import '../serializers/credit_card.dart';
+import '../serializers/product.dart';
 
 class BigCreditCard extends StatelessWidget {
-  const BigCreditCard({super.key, required this.card});
-  final CreditCard card;
+  const BigCreditCard({super.key, required this.product});
+  final Product? product;
 
   @override
   Widget build(BuildContext context) {
+    if (product == null) return Container();
     return Container(
       margin: const EdgeInsets.only(top: 30, right: 20, left: 20, bottom: 10),
       padding: const EdgeInsets.all(20),
@@ -28,16 +29,15 @@ class BigCreditCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
+              Flexible(
                 child: Text(
-                  card.cardtype.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.clip,
+                  product!.toString(),
+                  maxLines: 2,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                 ),
               ),
               Text(
-                currencyFormater.format(card.balance),
+                currencyFormater.format(product!.price),
                 overflow: TextOverflow.visible,
                 maxLines: 1,
                 style: Theme.of(context).textTheme.headline5?.copyWith(color: Colors.black),
@@ -58,7 +58,7 @@ class BigCreditCard extends StatelessWidget {
                       width: 40,
                     ),
                     Text(
-                      'XXXX XXXX XXXX ${card.cardnumber.substring(card.cardnumber.length - 4)}',
+                      product!.category.toString(),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                     ),
                   ],
@@ -68,11 +68,11 @@ class BigCreditCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   const Text(
-                    'VALID THRU',
+                    'Created At',
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(
-                    card.validtill,
+                    dateformter.format(product?.createdAt ?? DateTime.now()),
                     style: const TextStyle(color: Colors.black),
                   ),
                 ],
@@ -81,7 +81,7 @@ class BigCreditCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            card.name.toUpperCase(),
+            "- by ${product?.createdBy?.name}",
             style: const TextStyle(color: Colors.grey),
           ),
         ],

@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:horizonlabs/serializers/credit_card.dart';
+import 'package:horizonlabs/components/list_card_category.dart';
+import 'package:horizonlabs/models/category_model.dart';
+import 'package:horizonlabs/serializers/category.dart';
+import 'package:horizonlabs/serializers/product.dart';
 import 'package:provider/provider.dart';
 
 import '../components/big_credit_card.dart';
-import '../components/list_card.dart';
+import '../components/empty_widget.dart';
+import '../components/list_card_product.dart';
 
+import '../components/loading_widget.dart';
+import '../components/error_widget.dart';
 import '../config/constants.dart';
 import '../models/cards_model.dart';
 import 'profile_screen.dart';
@@ -67,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         key: floatingActionAdd,
         backgroundColor: Colors.amber,
-        onPressed: context.read<CardsModel>().addMoney,
+        onPressed: context.read<ProductModel>().addMoney,
         child: const Icon(Icons.add),
       ),
       body: CustomScrollView(
@@ -79,12 +85,13 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                BigCreditCard(key: featuredCardKey, card: context.watch<CardsModel>().getFeaturedCards),
+                if (!context.watch<ProductModel>().isLoading)
+                  BigCreditCard(key: featuredCardKey, product: context.read<ProductModel>().getFeaturedCards),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Text(
-                    'Credit Cards',
+                    'Products',
                     style: Theme.of(context).textTheme.headline6,
                     textAlign: TextAlign.start,
                   ),
@@ -92,22 +99,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          Consumer<CardsModel>(
+          Consumer<ProductModel>(
             builder: (_, model, __) {
-              final List<CreditCard> item = model.getAllCards;
+              if (model.isLoading) return const LoadingWidget();
+              if (model.isError) {
+                return ErrorsWidget(onPressed: () async {
+                  await model.loadData();
+                });
+              }
+
+              final List<Product> item = model.allCards;
+              if (item.isEmpty) return const EmptyDataWidget(data: 'No data');
               return SliverReorderableList(
                 itemBuilder: (BuildContext context, int index) {
                   return ReorderableDelayedDragStartListener(
                     enabled: true,
                     key: ValueKey(index),
                     index: index,
-                    child: ListCreditCard(
-                      key: ValueKey("list_${item[index].id}"),
-                      card: item[index],
+                    child: ListCardProduct(
+                      key: ValueKey("list_$index"),
+                      product: item[index],
                     ),
                   );
                 },
-                itemCount: model.getAllCards.length,
+                itemCount: model.allCards.length,
                 onReorder: model.reorderData,
               );
             },
@@ -120,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Text(
-                    'Debit Cards',
+                    'Categories',
                     style: Theme.of(context).textTheme.headline6,
                     textAlign: TextAlign.start,
                   ),
@@ -128,23 +143,27 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          Consumer<CardsModel>(
+          Consumer<CategoryModel>(
             builder: (_, model, __) {
-              final List<CreditCard> item = model.getAllDebitCards;
+              if (model.isLoading) return const LoadingWidget();
+              if (model.isError) return ErrorsWidget(onPressed: model.loadData);
+
+              final List<Category> item = model.allCategories;
+              if (item.isEmpty) return const EmptyDataWidget(data: 'No data');
               return SliverReorderableList(
                 itemBuilder: (BuildContext context, int index) {
                   return ReorderableDelayedDragStartListener(
                     enabled: true,
                     key: ValueKey(index),
                     index: index,
-                    child: ListCreditCard(
-                      key: ValueKey("list_${item[index].id}"),
-                      card: item[index],
+                    child: ListCardCategory(
+                      key: ValueKey("cat_${item[index].id}"),
+                      category: item[index],
                     ),
                   );
                 },
                 itemCount: item.length,
-                onReorder: model.reorderDebitData,
+                onReorder: model.reorderData,
               );
             },
           ),

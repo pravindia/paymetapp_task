@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horizonlabs/components/big_credit_card.dart';
-import 'package:horizonlabs/components/list_card.dart';
+import 'package:horizonlabs/components/list_card_product.dart';
 import 'package:horizonlabs/config/constants.dart';
 import 'package:horizonlabs/models/cards_model.dart';
 import 'package:integration_test/integration_test.dart';
@@ -40,14 +40,19 @@ void main() {
   testWidgets("Test add money Button", (WidgetTester tester) async {
     app.main();
     await tester.pumpAndSettle();
-    final Finder addWorkoutButton = find.byKey(floatingActionAdd);
-    await tester.tap(addWorkoutButton);
+    final Finder addMoneyButton = find.byKey(floatingActionAdd);
+    await tester.tap(addMoneyButton);
     await tester.pumpAndSettle();
   });
 
   testWidgets('Reorder card lists', (WidgetTester tester) async {
     app.main();
-    var originalListItems = CardsModel().getAllCards;
+    ProductModel model = ProductModel();
+    await Future.doWhile(() async {
+      await Future.delayed(const Duration(microseconds: 100));
+      return (model.isLoading);
+    });
+    var originalListItems = model.allCards;
     var listItems = originalListItems;
     await tester.pumpAndSettle();
     expect(listItems, orderedEquals(originalListItems));
@@ -64,7 +69,7 @@ void main() {
     app.main();
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(ListCreditCard).first);
+    await tester.tap(find.byType(ListCardProduct).first);
 
     await tester.pumpAndSettle();
     expect(find.byType(BigCreditCard), findsOneWidget);
